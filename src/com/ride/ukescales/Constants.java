@@ -6,12 +6,14 @@ import java.util.List;
 
 public interface Constants {
 
+	//fretboard rendering
 	public static final String FRETBOARD_FILL = "rgb(111,80,0)";
 	public static final String NUT_FILL = "rgb(255,255,174)";
 	public static final String FRET_FILL = "rgb(192,192,192)";
 	public static final String STRING_FILL = "url(#string-pattern)";
 	public static final String DOT_FILL = "rgb(255,255,240)";
 	public static final int FRET_WIDTH = 60;
+	public static final int NUT_WIDTH = 80;
 	public static final int FRET_OFFSET = 400;
 	public static final int STRING_OFFSET = 233;
 	public static final int STRING_OFFSET_CORRECTION = 83;

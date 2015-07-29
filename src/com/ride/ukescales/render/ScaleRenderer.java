@@ -80,7 +80,7 @@ public class ScaleRenderer {
 	private Element drawNut(Document doc, String svgNS, Fretboard fb) {
 		Element nut = doc.createElementNS(svgNS, "rect");
 		nut.setAttributeNS(null, "stroke", "black");
-		nut.setAttributeNS(null, "width", "80");
+		nut.setAttributeNS(null, "width", String.valueOf(Constants.NUT_WIDTH));
 		nut.setAttributeNS(null, "height", String.valueOf(fb.getHeight()));
 		nut.setAttributeNS(null, "fill", Constants.NUT_FILL);
 
@@ -93,7 +93,7 @@ public class ScaleRenderer {
 		for (int i = 1; i <= fb.getNumber_of_frets(); i++) {
 			Element fret = doc.createElementNS(svgNS, "rect");
 			fret.setAttributeNS(null, "stroke", "black");
-			fret.setAttributeNS(null, "width", "60");
+			fret.setAttributeNS(null, "width", String.valueOf(Constants.FRET_WIDTH));
 			fret.setAttributeNS(null, "height", String.valueOf(fb.getHeight()));
 			fret.setAttributeNS(null, "fill", Constants.FRET_FILL);
 			fret.setAttributeNS(null, "x",

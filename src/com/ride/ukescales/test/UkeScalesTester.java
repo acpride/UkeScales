@@ -23,19 +23,35 @@ import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.Document;
 
 import com.ride.ukescales.Fretboard;
+import com.ride.ukescales.Scale;
 import com.ride.ukescales.render.ScaleRenderer;
 
 public class UkeScalesTester {
 
 	/**
 	 * @param args
+	 * @throws Exception 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 
 		ScaleRenderer sr = new ScaleRenderer();
 		Document svg = sr.fretboardSVGRender(new Fretboard());
 		
-
+		Scale cmajor = new Scale("C");
+		String intervals[] = {"1","2","3","4","5","6","7"};
+		cmajor.parse(intervals);
+		Scale dmajor = new Scale("D");
+		dmajor.parse(intervals);
+		Scale cminor = new Scale("C");
+		String intervalsM[] = {"1","2","b3","4","5","6","7"};
+		cminor.parse(intervalsM);
+		Scale cpentamajor = new Scale("C");
+		String intervalsPM[] = {"1","2","3","5","6"};
+		cpentamajor.parse(intervalsPM);
+		Scale gsharpmajor = new Scale("G#");
+		String intervalsGSM[] = {"1","2","3","4","5","6","7"};
+		gsharpmajor.parse(intervalsGSM);
+		
 		OutputFormat format = new OutputFormat(svg);
 		format.setIndenting(true);
 		OutputStream svgOutStream;
