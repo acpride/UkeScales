@@ -1,4 +1,4 @@
-package com.ride.ukescales;
+package com.ride.ukescales.render;
 
 public class Dot {
 	private long x = -1;

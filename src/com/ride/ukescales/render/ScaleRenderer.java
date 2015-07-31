@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.batik.dom.svg.SVGDOMImplementation;
+import org.w3c.dom.Comment;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.ride.ukescales.Constants;
-import com.ride.ukescales.Fretboard;
 
 public class ScaleRenderer {
 
@@ -44,17 +44,32 @@ public class ScaleRenderer {
 		List<Element> dots = drawPositionDots(doc, svgNS, fb);
 
 		// Attach the fretboard to the root 'svg' element.
+		Comment comment = doc.createComment(" Fretboard ");
+		svgRoot.appendChild(comment);
 		svgRoot.appendChild(fretboard);
+		
+		//Nut
+		comment = doc.createComment(" Nut ");
+		svgRoot.appendChild(comment);
 		svgRoot.appendChild(nut);
+				
 		// frets...
+		comment = doc.createComment(" Frets ");
+		svgRoot.appendChild(comment);
 		for (Element fret : frets) {
 			svgRoot.appendChild(fret);
 		}
+		
 		// strings...
+		comment = doc.createComment("Strings");
+		svgRoot.appendChild(comment);
 		for (Element string : strings) {
 			svgRoot.appendChild(string);
 		}
+		
 		// position dots
+		comment = doc.createComment(" Position markers ");
+		svgRoot.appendChild(comment);
 		for (Element dot : dots) {
 			svgRoot.appendChild(dot);
 		}
@@ -111,7 +126,7 @@ public class ScaleRenderer {
 	private List<Element> drawStrings(Document doc, String svgNS, Fretboard fb) {
 
 		List<Element> strings = new ArrayList<Element>();
-		
+					
 		//string fill (gradient)
 		Element linearGradient = doc.createElementNS(svgNS, "linearGradient");
 		linearGradient.setAttributeNS(null, "id", "string-pattern");

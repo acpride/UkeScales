@@ -1,18 +1,8 @@
 package com.ride.ukescales.test;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
@@ -22,36 +12,34 @@ import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.Document;
 
-import com.ride.ukescales.Fretboard;
+import com.ride.ukescales.Pitch;
 import com.ride.ukescales.Scale;
+import com.ride.ukescales.render.Fretboard;
 import com.ride.ukescales.render.ScaleRenderer;
 
 public class UkeScalesTester {
 
 	/**
 	 * @param args
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
 
 		ScaleRenderer sr = new ScaleRenderer();
 		Document svg = sr.fretboardSVGRender(new Fretboard());
+
+		System.out.println("---MAJOR SCALES---");
+		for(String pitch : Scale.getCircleoffifths()){
+			Scale scale = new Scale(pitch);
+			scale.parse(Scale.ScaleType.MAJOR_SCALE);
+		}
 		
-		Scale cmajor = new Scale("C");
-		String intervals[] = {"1","2","3","4","5","6","7"};
-		cmajor.parse(intervals);
-		Scale dmajor = new Scale("D");
-		dmajor.parse(intervals);
-		Scale cminor = new Scale("C");
-		String intervalsM[] = {"1","2","b3","4","5","6","7"};
-		cminor.parse(intervalsM);
-		Scale cpentamajor = new Scale("C");
-		String intervalsPM[] = {"1","2","3","5","6"};
-		cpentamajor.parse(intervalsPM);
-		Scale gsharpmajor = new Scale("G#");
-		String intervalsGSM[] = {"1","2","3","4","5","6","7"};
-		gsharpmajor.parse(intervalsGSM);
-		
+		System.out.println("\n---MINOR SCALES---");
+		for(String pitch : Scale.getCircleoffifths()){
+			Scale scale = new Scale(pitch);
+			scale.parse(Scale.ScaleType.MINOR_SCALE);
+		}
+				
 		OutputFormat format = new OutputFormat(svg);
 		format.setIndenting(true);
 		OutputStream svgOutStream;
