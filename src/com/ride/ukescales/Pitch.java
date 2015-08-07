@@ -17,7 +17,7 @@ public enum Pitch {
 	B_FLAT(11, "Bb", "A#"),
 	B(12, "B", "Cb"),
 	B_SHARP(13, "B#", "C"),
-	C_FLAT(13, "Cb", "B");
+	C_FLAT(12, "Cb", "B");
 
 	private static int MAX_NOTE_SEPARATION = 11;
 	
@@ -65,6 +65,17 @@ public enum Pitch {
 					if(pitch.substring(0,1).equals(this.getPitch().substring(0,1))){
 						pitch = p.getEnharmony();						
 					}
+					
+					//check if it's a scale with flats or sharps 
+					if(pitch.length()==2 && pitch.substring(1,2).equals("#") && !sharps){
+						//the result pitch is sharp but the scale is with flats
+						pitch = p.getEnharmony();
+						
+					}else if(pitch.length()==2 && pitch.substring(1,2).equals("b") && sharps){
+						//the result pitch is flat but the scale is with sharps
+						pitch = p.getEnharmony();
+					}
+					
 					return pitch;
 				}
 			}
@@ -77,6 +88,17 @@ public enum Pitch {
 					if(pitch.substring(0,1).equals(this.getPitch().substring(0,1))){
 						pitch = p.getEnharmony();
 					}
+					
+					//check if it's a scale with flats or sharps 
+					if(pitch.length()==2 && pitch.substring(1,2).equals("#") && !sharps){
+						//the result pitch is sharp but the scale is with flats
+						pitch = p.getEnharmony();
+						
+					}else if(pitch.length()==2 && pitch.substring(1,2).equals("b") && sharps){
+						//the result pitch is flat but the scale is with sharps
+						pitch = p.getEnharmony();
+					}
+					
 					return pitch;
 				}
 			}
