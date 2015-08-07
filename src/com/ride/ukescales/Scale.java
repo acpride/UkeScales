@@ -186,6 +186,23 @@ public class Scale {
 		System.out.println(this.notes);
 
 	}
+	
+	public void relativeMinor() throws Exception {
+		this.notes = new ArrayList<Note>();
+
+		Pitch p = Pitch.getPitchByName(this.key);
+		String relativeMinorKey = p.getNoteAtInterval(9, true);//TODO sharps!!!
+		// adjust intervals
+		String[] scalePattern = getScalePattern(ScaleType.MINOR_SCALE);
+		String[] scale = setIntervals(relativeMinorKey, scalePattern);
+
+		for (int i = 0; i < scale.length; i++) {
+			this.notes
+					.add(new Note(scale[i], "degree", (i == 0) ? true : false));
+
+		}
+		System.out.println(this.notes);
+	}
 
 	public static String[] getCircleoffifths() {
 		return circleOfFifths;
