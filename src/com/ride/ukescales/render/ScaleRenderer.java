@@ -1,6 +1,7 @@
 package com.ride.ukescales.render;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.batik.dom.svg.SVGDOMImplementation;
@@ -10,13 +11,52 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.ride.ukescales.Constants;
+import com.ride.ukescales.Note;
+import com.ride.ukescales.Pitch;
+import com.ride.ukescales.Scale;
 
 public class ScaleRenderer {
+
+	private String[][] fretboardNotes;
+
+	private void populateFretboard(boolean sharps) {
+		// set notes in every fret of every string
+		// 4th string
+		String open4 = Constants.STANDARD_TUNING[0];
+		Pitch p4 = Pitch.getPitchByName(open4);
+		String[] notes4 = p4.getChromaticScale(sharps);
+		System.out.println("4th string: " + Arrays.asList(notes4));
+
+		// 3rd string
+		String open3 = Constants.STANDARD_TUNING[1];
+		Pitch p3 = Pitch.getPitchByName(open3);
+		String[] notes3 = p3.getChromaticScale(sharps);
+		System.out.println("3rd string: " + Arrays.asList(notes3));
+
+		// 2nd string
+		String open2 = Constants.STANDARD_TUNING[2];
+		Pitch p2 = Pitch.getPitchByName(open2);
+		String[] notes2 = p2.getChromaticScale(sharps);
+		System.out.println("2nd string: " + Arrays.asList(notes2));
+
+		// 1st string
+		String open1 = Constants.STANDARD_TUNING[3];
+		Pitch p1 = Pitch.getPitchByName(open1);
+		String[] notes1 = p1.getChromaticScale(sharps);
+		System.out.println("1st string: " + Arrays.asList(notes1));
+
+		fretboardNotes = new String[4][notes1.length];
+		fretboardNotes[0] = notes1;
+		fretboardNotes[1] = notes2;
+		fretboardNotes[2] = notes3;
+		fretboardNotes[3] = notes4;
+	}
 
 	/**
 	 * Renders a SVG from a Fretboard object
 	 * 
 	 * @param fb
+	 * @return A svg document containing the fretboard
 	 */
 	public Document fretboardSVGRender(Fretboard fb) {
 
@@ -28,9 +68,63 @@ public class ScaleRenderer {
 
 		return doc;
 	}
-	
-	private Document renderFretboard(Document doc, String svgNS, Fretboard fb) {
+
+	/**
+	 * Renders a scale in a fretboard
+	 * 
+	 * @param doc
+	 * @param svgNS
+	 * @param fb
+	 * @param scale
+	 * @return A svg document containing a scale drawn in a given fretboard
+	 */
+	public Document renderScale(Document doc, Fretboard fb, List<Note> scale) {
+
+		boolean scaleWithSharps = true;
+		if (Arrays.asList(Scale.SCALES_WITH_FLATS).contains(scale.get(0).getPitch())) {
+			scaleWithSharps = false;
+		}
+
+		populateFretboard(scaleWithSharps);
 		
+		String svgNS = SVGDOMImplementation.SVG_NAMESPACE_URI;
+		List<Element> scaleNotes = new ArrayList<Element>();
+
+		// find the scale notes in each string
+		for (int string = 0; string < fretboardNotes.length; string++) {
+			// index 0 = 1st string; index 3 = 4th string
+			// each position in the array is a fret, beginning with open string
+			// (=0)
+			for (int fret = 0; fret < fretboardNotes[string].length; fret++) {
+				Note note = isNoteFromScale(scale, fretboardNotes[string][fret]);
+				if (note != null) {
+					System.out.println("The note "
+							+ fretboardNotes[string][fret] + " in scale ("
+							+ note + ")");
+					System.out.println("Draw note in fret " + fret
+							+ " from string " + (string + 1));
+					Element dot = drawDot(doc, svgNS, fb, note, string, fret);
+				}
+			}
+
+		}
+
+		return doc;
+	}
+
+	private Note isNoteFromScale(List<Note> scale, String pitch) {
+
+		for (Note n : scale) {
+			if (n.getPitch().equals(pitch)) {
+				return n;
+			}
+		}
+
+		return null;
+	}
+
+	private Document renderFretboard(Document doc, String svgNS, Fretboard fb) {
+
 		Element svgRoot = doc.getDocumentElement();
 		// Set the width and height attributes on the root 'svg' element.
 		svgRoot.setAttributeNS(null, "width", String.valueOf(fb.getWidth()));
@@ -47,36 +141,36 @@ public class ScaleRenderer {
 		Comment comment = doc.createComment(" Fretboard ");
 		svgRoot.appendChild(comment);
 		svgRoot.appendChild(fretboard);
-		
-		//Nut
+
+		// Nut
 		comment = doc.createComment(" Nut ");
 		svgRoot.appendChild(comment);
 		svgRoot.appendChild(nut);
-				
+
 		// frets...
 		comment = doc.createComment(" Frets ");
 		svgRoot.appendChild(comment);
 		for (Element fret : frets) {
 			svgRoot.appendChild(fret);
 		}
-		
+
 		// strings...
 		comment = doc.createComment("Strings");
 		svgRoot.appendChild(comment);
 		for (Element string : strings) {
 			svgRoot.appendChild(string);
 		}
-		
+
 		// position dots
 		comment = doc.createComment(" Position markers ");
 		svgRoot.appendChild(comment);
 		for (Element dot : dots) {
 			svgRoot.appendChild(dot);
 		}
-		
+
 		return doc;
 	}
-	
+
 	private Element drawFretboard(Document doc, String svgNS, Fretboard fb) {
 
 		Element fretboard = doc.createElementNS(svgNS, "rect");
@@ -108,14 +202,15 @@ public class ScaleRenderer {
 		for (int i = 1; i <= fb.getNumber_of_frets(); i++) {
 			Element fret = doc.createElementNS(svgNS, "rect");
 			fret.setAttributeNS(null, "stroke", "black");
-			fret.setAttributeNS(null, "width", String.valueOf(Constants.FRET_WIDTH));
+			fret.setAttributeNS(null, "width",
+					String.valueOf(Constants.FRET_WIDTH));
 			fret.setAttributeNS(null, "height", String.valueOf(fb.getHeight()));
 			fret.setAttributeNS(null, "fill", Constants.FRET_FILL);
 			fret.setAttributeNS(null, "x",
 					String.valueOf(i * Constants.FRET_OFFSET));
 			fret.setAttributeNS(null, "y", "0");
 			fret.setAttributeNS(null, "style", Constants.FRET_BORDER_STYLE);
-			
+
 			frets.add(fret);
 		}
 
@@ -126,8 +221,8 @@ public class ScaleRenderer {
 	private List<Element> drawStrings(Document doc, String svgNS, Fretboard fb) {
 
 		List<Element> strings = new ArrayList<Element>();
-					
-		//string fill (gradient)
+
+		// string fill (gradient)
 		Element linearGradient = doc.createElementNS(svgNS, "linearGradient");
 		linearGradient.setAttributeNS(null, "id", "string-pattern");
 		linearGradient.setAttributeNS(null, "x1", "0%");
@@ -147,7 +242,7 @@ public class ScaleRenderer {
 		linearGradient.appendChild(stopOffset2);
 		linearGradient.appendChild(stopOffset3);
 		strings.add(linearGradient);
-		
+
 		for (int i = 1; i <= fb.getNumber_of_strings(); i++) {
 			Element string = doc.createElementNS(svgNS, "rect");
 			string.setAttributeNS(null, "stroke", "black");
@@ -175,7 +270,6 @@ public class ScaleRenderer {
 
 		for (int i = 1; i <= fb.getNumber_of_frets(); i++) {
 			if (Constants.FRETS_WITH_DOT.contains(i)) {
-				
 
 				// special treatment 12th fret
 				if (i == 12) {
@@ -225,4 +319,30 @@ public class ScaleRenderer {
 
 		return dots;
 	}
+
+	private Element drawDot(Document doc, String svgNS, Fretboard fb,
+			Note note, int string, int fret) {
+
+		Element dot = doc.createElementNS(svgNS, "circle");
+		dot.setAttributeNS(null, "stroke", "none");
+		if (note.isRoot()) {
+			dot.setAttributeNS(null, "fill", Constants.DOT_NOTE_ROOT);
+		} else {
+			dot.setAttributeNS(null, "fill", Constants.DOT_NOTE);
+		}
+		dot.setAttributeNS(null, "r", "65");
+		dot.setAttributeNS(null, "cy", "520");
+		dot.setAttributeNS(null, "cx", "300");
+
+		return dot;
+	}
+
+	public String[][] getFretboardNotes() {
+		return fretboardNotes;
+	}
+
+	public void setFretboardNotes(String[][] fretboardNotes) {
+		this.fretboardNotes = fretboardNotes;
+	}
+
 }
