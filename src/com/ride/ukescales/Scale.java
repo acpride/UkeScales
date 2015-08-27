@@ -18,9 +18,9 @@ public class Scale {
 		MAJOR_SCALE, MINOR_SCALE, MELODIC_SCALE, HARMONIC_SCALE, PENTATONIC_MAJOR_SCALE, PENTATONIC_MINOR_SCALE, BLUES_SCALE
 	}
 
-	private static final String SCALES_WITH_SHARPS[] = { "D", "E", "G", "A",
+	public static final String SCALES_WITH_SHARPS[] = { "D", "E", "G", "A",
 			"C#", "F#", "B" };
-	private static final String SCALES_WITH_FLATS[] = { "Eb", "F", "Ab", "Bb",
+	public static final String SCALES_WITH_FLATS[] = { "Eb", "F", "Ab", "Bb",
 			"Db", "Gb", "Cb" };
 
 	private static final String MAJOR_SCALE[] = { "w", "w", "h", "w", "w", "w" };
@@ -170,6 +170,21 @@ public class Scale {
 		return scale;
 	}
 
+	public List<Note> getScale(ScaleType scaleType) throws Exception {
+		this.notes = new ArrayList<Note>();
+
+		// adjust intervals
+		String[] scalePattern = getScalePattern(scaleType);
+		String[] scale = setIntervals(key, scalePattern);
+
+		for (int i = 0; i < scale.length; i++) {
+			this.notes
+					.add(new Note(scale[i], "degree", (i == 0) ? true : false));
+
+		}
+		return this.notes;
+		
+	}
 	public void parse(ScaleType scaleType) throws Exception {
 
 		this.notes = new ArrayList<Note>();
@@ -194,6 +209,23 @@ public class Scale {
 		String relativeMinorKey = p.getNoteAtInterval(9, true);//TODO sharps!!!
 		// adjust intervals
 		String[] scalePattern = getScalePattern(ScaleType.MINOR_SCALE);
+		String[] scale = setIntervals(relativeMinorKey, scalePattern);
+
+		for (int i = 0; i < scale.length; i++) {
+			this.notes
+					.add(new Note(scale[i], "degree", (i == 0) ? true : false));
+
+		}
+		System.out.println(this.notes);
+	}
+	
+	public void relativeMajor() throws Exception {
+		this.notes = new ArrayList<Note>();
+
+		Pitch p = Pitch.getPitchByName(this.key);
+		String relativeMinorKey = p.getNoteAtInterval(3, true);//TODO sharps!!!
+		// adjust intervals
+		String[] scalePattern = getScalePattern(ScaleType.MAJOR_SCALE);
 		String[] scale = setIntervals(relativeMinorKey, scalePattern);
 
 		for (int i = 0; i < scale.length; i++) {
