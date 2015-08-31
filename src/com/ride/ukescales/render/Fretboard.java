@@ -6,8 +6,10 @@ public class Fretboard {
 
 	protected int number_of_strings = 4;
 	protected int number_of_frets = 15;
-	private int width = 6000;
+	private int width = 6093;
+	private int widthHeadstock = 707;
 	private int height = 1000;
+	private int heightHeadstock = 1539;
 	private List<Dot> scale = null;
 	
 	public int getNumber_of_strings() {
@@ -39,6 +41,18 @@ public class Fretboard {
 	}
 	public void setHeight(int height) {
 		this.height = height;
+	}
+	public int getWidthHeadstock() {
+		return widthHeadstock;
+	}
+	public void setWidthHeadstock(int widthHeadstock) {
+		this.widthHeadstock = widthHeadstock;
+	}
+	public int getHeightHeadstock() {
+		return heightHeadstock;
+	}
+	public void setHeightHeadstock(int heightHeadstock) {
+		this.heightHeadstock = heightHeadstock;
 	}
 	
 }

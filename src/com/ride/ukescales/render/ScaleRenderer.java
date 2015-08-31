@@ -103,12 +103,19 @@ public class ScaleRenderer {
 							+ note + ")");
 					System.out.println("Draw note in fret " + fret
 							+ " from string " + (string + 1));
-					Element dot = drawDot(doc, svgNS, fb, note, string, fret);
+					scaleNotes.add(drawDot(doc, svgNS, fb, note, string, fret));
 				}
 			}
 
 		}
 
+		Element svgRoot = doc.getDocumentElement();
+		Comment comment = comment = doc.createComment(" Notes ");
+		svgRoot.appendChild(comment);
+		for (Element note : scaleNotes) {
+			svgRoot.appendChild(note);
+		}
+		
 		return doc;
 	}
 
@@ -127,12 +134,14 @@ public class ScaleRenderer {
 
 		Element svgRoot = doc.getDocumentElement();
 		// Set the width and height attributes on the root 'svg' element.
-		svgRoot.setAttributeNS(null, "width", String.valueOf(fb.getWidth()));
-		svgRoot.setAttributeNS(null, "height", String.valueOf(fb.getHeight()));
+		svgRoot.setAttributeNS(null, "width", String.valueOf(fb.getWidth()+fb.getWidthHeadstock()));
+		svgRoot.setAttributeNS(null, "height", String.valueOf(fb.getHeightHeadstock()));
 
-		// create the fretboard & nut
+		// create the fretboard & nut & headstock
 		Element fretboard = drawFretboard(doc, svgNS, fb);
 		Element nut = drawNut(doc, svgNS, fb);
+		Element headstock = drawHeadstock(doc, svgNS, fb);
+		//draw frets, strings & position dots
 		List<Element> frets = drawFrets(doc, svgNS, fb);
 		List<Element> strings = drawStrings(doc, svgNS, fb);
 		List<Element> dots = drawPositionDots(doc, svgNS, fb);
@@ -147,6 +156,11 @@ public class ScaleRenderer {
 		svgRoot.appendChild(comment);
 		svgRoot.appendChild(nut);
 
+		// Headstock
+		comment = doc.createComment(" Headstock ");
+		svgRoot.appendChild(comment);
+		svgRoot.appendChild(headstock);
+		
 		// frets...
 		comment = doc.createComment(" Frets ");
 		svgRoot.appendChild(comment);
@@ -174,8 +188,8 @@ public class ScaleRenderer {
 	private Element drawFretboard(Document doc, String svgNS, Fretboard fb) {
 
 		Element fretboard = doc.createElementNS(svgNS, "rect");
-		fretboard.setAttributeNS(null, "x", "0");
-		fretboard.setAttributeNS(null, "y", "0");
+		fretboard.setAttributeNS(null, "x", String.valueOf(fb.getWidthHeadstock()));
+		fretboard.setAttributeNS(null, "y", String.valueOf(fb.getHeightHeadstock()/2 - fb.getHeight()/2));
 		fretboard.setAttributeNS(null, "width", String.valueOf(fb.getWidth()));
 		fretboard
 				.setAttributeNS(null, "height", String.valueOf(fb.getHeight()));
@@ -185,13 +199,38 @@ public class ScaleRenderer {
 
 		return fretboard;
 	}
+	
+	private Element drawHeadstock(Document doc, String svgNS, Fretboard fb) {
+		Element headstockGroup = doc.createElementNS(svgNS, "g");		
+		headstockGroup.setAttributeNS(null, "transform", "translate(707,269)");
+		Element headstock = doc.createElementNS(svgNS, "path");
+		headstock.setAttributeNS(null, "style", "fill:none;stroke:#000000;stroke-width:18;");
+		headstock.setAttributeNS(null, "d", "m -4,1000 c -92,15 -179,57 -248,121 -39,36 -73,79 -99,126 l -275,5");
+		headstockGroup.appendChild(headstock);
+		headstock = doc.createElementNS(svgNS, "path");
+		headstock.setAttributeNS(null, "style", "fill:none;stroke:#000000;stroke-width:18;");
+		headstock.setAttributeNS(null, "d", "M -7,0.5 C -99,-14 -186,-57 -255,-120 c -39,-36 -73,-79 -99,-126 l -275,-5");
+		headstockGroup.appendChild(headstock);
+		headstock = doc.createElementNS(svgNS, "path");
+		headstock.setAttributeNS(null, "style", "fill:none;stroke:#000000;stroke-width:18;");
+		headstock.setAttributeNS(null, "d", "m -627,-260 0,1521");
+		headstockGroup.appendChild(headstock);
+		headstock = doc.createElementNS(svgNS, "path");
+		headstock.setAttributeNS(null, "style", "fill:#bd8840;stroke-width:18;fill-opacity:0.76851851");
+		headstock.setAttributeNS(null, "d", "m -618.60582,500.74364 0,-739.99588 86.48696,0.94568 c 47.56784,0.52013 105.54308,1.86922 128.83388,2.99797 l 42.3469,2.05229 21.26061,31.99807 c 36.12402,54.36812 92.7874,109.7824 146.73329,143.49871 44.70157,27.9386 113.509204,55.8243 160.611514,65.09111 l 21.75645,4.28032 0,490.11502 0,490.11498 -16.59851,2.449 c -46.34181,6.83719 -124.650124,39.55229 -174.933504,73.08239 -53.12956,35.4281 -112.62426,97.271 -143.93014,149.611 l -11.46338,19.1654 -89.18581,2.2949 c -49.05219,1.2622 -107.80061,2.2949 -130.55204,2.2949 l -41.36622,0 0,-739.99586 z");
+		headstockGroup.appendChild(headstock);
+		
+		return headstockGroup;		
+	}
 
 	private Element drawNut(Document doc, String svgNS, Fretboard fb) {
 		Element nut = doc.createElementNS(svgNS, "rect");
 		nut.setAttributeNS(null, "stroke", "black");
 		nut.setAttributeNS(null, "width", String.valueOf(Constants.NUT_WIDTH));
-		nut.setAttributeNS(null, "height", String.valueOf(fb.getHeight()));
+		nut.setAttributeNS(null, "height", String.valueOf(fb.getHeight()));		
 		nut.setAttributeNS(null, "fill", Constants.NUT_FILL);
+		nut.setAttributeNS(null, "x", String.valueOf(fb.getWidthHeadstock()));
+		nut.setAttributeNS(null, "y", String.valueOf(fb.getHeightHeadstock()/2 - fb.getHeight()/2));
 
 		return nut;
 	}
@@ -207,8 +246,8 @@ public class ScaleRenderer {
 			fret.setAttributeNS(null, "height", String.valueOf(fb.getHeight()));
 			fret.setAttributeNS(null, "fill", Constants.FRET_FILL);
 			fret.setAttributeNS(null, "x",
-					String.valueOf(i * Constants.FRET_OFFSET));
-			fret.setAttributeNS(null, "y", "0");
+					String.valueOf(i * Constants.FRET_OFFSET + fb.getWidthHeadstock()));
+			fret.setAttributeNS(null, "y", String.valueOf(fb.getHeightHeadstock()/2 - fb.getHeight()/2));
 			fret.setAttributeNS(null, "style", Constants.FRET_BORDER_STYLE);
 
 			frets.add(fret);
@@ -249,12 +288,12 @@ public class ScaleRenderer {
 			string.setAttributeNS(null, "width", String.valueOf(fb.getWidth()));
 			string.setAttributeNS(null, "height", "40");
 			string.setAttributeNS(null, "fill", Constants.STRING_FILL);
-			string.setAttributeNS(null, "x", "0");
+			string.setAttributeNS(null, "x", String.valueOf(fb.getWidthHeadstock()));
 			string.setAttributeNS(
 					null,
 					"y",
 					String.valueOf((i * Constants.STRING_OFFSET)
-							- Constants.STRING_OFFSET_CORRECTION));
+							- Constants.STRING_OFFSET_CORRECTION + (fb.getHeightHeadstock()/2 - fb.getHeight()/2)));
 
 			strings.add(string);
 		}
@@ -277,39 +316,39 @@ public class ScaleRenderer {
 					dot.setAttributeNS(null, "stroke", "none");
 					dot.setAttributeNS(null, "fill", Constants.DOT_FILL);
 					dot.setAttributeNS(null, "r", "65");
-					dot.setAttributeNS(null, "cy", "280");
+					dot.setAttributeNS(null, "cy", String.valueOf(Constants.DOT_POSITION_TWELVE_1 + (fb.getHeightHeadstock()/2 - fb.getHeight()/2)));
 					dot.setAttributeNS(
 							null,
 							"cx",
 							String.valueOf((i * Constants.FRET_OFFSET)
 									- (Constants.FRET_OFFSET / 2)
-									+ (Constants.FRET_WIDTH / 2)));
+									+ (Constants.FRET_WIDTH / 2)+ fb.getWidthHeadstock()));
 					dots.add(dot);
 					dot = null;
 					dot = doc.createElementNS(svgNS, "circle");
 					dot.setAttributeNS(null, "stroke", "none");
 					dot.setAttributeNS(null, "fill", Constants.DOT_FILL);
 					dot.setAttributeNS(null, "r", "65");
-					dot.setAttributeNS(null, "cy", "750");
+					dot.setAttributeNS(null, "cy", String.valueOf(Constants.DOT_POSITION_TWELVE_2 + (fb.getHeightHeadstock()/2 - fb.getHeight()/2)));
 					dot.setAttributeNS(
 							null,
 							"cx",
 							String.valueOf((i * Constants.FRET_OFFSET)
 									- (Constants.FRET_OFFSET / 2)
-									+ (Constants.FRET_WIDTH / 2)));
+									+ (Constants.FRET_WIDTH / 2) + fb.getWidthHeadstock()));
 					dots.add(dot);
 				} else {
 					Element dot = doc.createElementNS(svgNS, "circle");
 					dot.setAttributeNS(null, "stroke", "none");
 					dot.setAttributeNS(null, "fill", Constants.DOT_FILL);
 					dot.setAttributeNS(null, "r", "65");
-					dot.setAttributeNS(null, "cy", "520");
+					dot.setAttributeNS(null, "cy", String.valueOf(Constants.DOT_POSITION_CENTER + (fb.getHeightHeadstock()/2 - fb.getHeight()/2)));
 					dot.setAttributeNS(
 							null,
 							"cx",
 							String.valueOf((i * Constants.FRET_OFFSET)
 									- (Constants.FRET_OFFSET / 2)
-									+ (Constants.FRET_WIDTH / 2)));
+									+ (Constants.FRET_WIDTH / 2) + fb.getWidthHeadstock()));
 
 					dots.add(dot);
 				}
@@ -320,9 +359,34 @@ public class ScaleRenderer {
 		return dots;
 	}
 
+	private String getStringPosition(int string, Fretboard fb){
+		String s = String.valueOf((string * Constants.STRING_OFFSET)
+				- Constants.STRING_OFFSET_CORRECTION_NOTES + (fb.getHeightHeadstock()/2 - fb.getHeight()/2)); 
+		return s;
+		
+	}
+	private String getStringPositionText(int string, Fretboard fb){
+		String s = String.valueOf((string * Constants.STRING_OFFSET)
+				- Constants.STRING_OFFSET_CORRECTION_NOTES + Constants.STRING_OFFSET_CORRECTION_NOTES_TEXT + (fb.getHeightHeadstock()/2 - fb.getHeight()/2)); 
+		return s;
+		
+	}
+	
+	private String getFretPosition(int fret, Fretboard fb){
+		
+		String f = String.valueOf((fret * Constants.FRET_OFFSET + fb.getWidthHeadstock()) - Constants.FRET_OFFSET_CORRECTION );
+		return f;
+	}
+	
 	private Element drawDot(Document doc, String svgNS, Fretboard fb,
 			Note note, int string, int fret) {
 
+		Element position = doc.createElementNS(svgNS, "g");
+		
+		String fretPosition = getFretPosition(fret, fb);
+		String stringPosition = getStringPosition(string+1, fb);
+		String stringPositionText = getStringPositionText(string+1, fb);
+		
 		Element dot = doc.createElementNS(svgNS, "circle");
 		dot.setAttributeNS(null, "stroke", "none");
 		if (note.isRoot()) {
@@ -330,11 +394,25 @@ public class ScaleRenderer {
 		} else {
 			dot.setAttributeNS(null, "fill", Constants.DOT_NOTE);
 		}
-		dot.setAttributeNS(null, "r", "65");
-		dot.setAttributeNS(null, "cy", "520");
-		dot.setAttributeNS(null, "cx", "300");
-
-		return dot;
+		dot.setAttributeNS(null, "r", Constants.DOT_NOTE_RADIUS);
+		dot.setAttributeNS(null, "cy", stringPosition);
+		dot.setAttributeNS(null, "cx", fretPosition);
+		position.appendChild(dot);
+		
+		Element noteName = doc.createElementNS(svgNS, "text");
+		noteName.setAttributeNS(null, "x", fretPosition);
+		noteName.setAttributeNS(null, "y", stringPositionText);
+		noteName.setAttributeNS(null, "font-family", "Sans");
+		noteName.setAttributeNS(null, "font-size", Constants.NOTE_FONT_SIZE);
+		noteName.setAttributeNS(null, "fill", "white");
+		noteName.setAttributeNS(null, "text-anchor", "middle");
+		if(note.isRoot()){
+			noteName.setAttributeNS(null, "style", "font-weight:bold;");
+		}
+		noteName.appendChild(doc.createTextNode(note.getPitch()));
+		position.appendChild(noteName);
+	
+		return position;
 	}
 
 	public String[][] getFretboardNotes() {
