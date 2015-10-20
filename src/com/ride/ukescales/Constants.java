@@ -33,6 +33,7 @@ public interface Constants {
 	//open string notes in standard tuning (from 4th to 1st)
 	public static final String[] STANDARD_TUNING = { "G", "C", "E", "A" };
 	public static final String[] CHROMATIC_SCALE = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+	public static final String[] CHROMATIC_SCALE_F_SHARP_SCALE = { "C", "C#", "D", "D#", "E", "E#", "F#", "G", "G#", "A", "A#", "B" };
 	public static final String[] CHROMATIC_SCALE_FLAT = { "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B" };
 	
 }
