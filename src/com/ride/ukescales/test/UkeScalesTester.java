@@ -4,13 +4,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.Paths;
 import java.util.List;
 
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.TranscodingHints;
 import org.apache.batik.transcoder.image.JPEGTranscoder;
 import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.xml.serialize.OutputFormat;
@@ -18,7 +16,6 @@ import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.Document;
 
 import com.ride.ukescales.Note;
-import com.ride.ukescales.Pitch;
 import com.ride.ukescales.Scale;
 import com.ride.ukescales.Scale.ScaleType;
 import com.ride.ukescales.render.Fretboard;
