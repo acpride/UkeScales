@@ -104,16 +104,18 @@ public enum Pitch {
 
 	}
 
-	public String[] getChromaticScale(boolean sharps) {
+	public String[] getChromaticScale(boolean sharps, boolean isFsharpMajor) {
 		
-		String[] chromatic = new String[Constants.CHROMATIC_SCALE.length];
+		String[] chromaticScale = (!isFsharpMajor)?Constants.CHROMATIC_SCALE:Constants.CHROMATIC_SCALE_F_SHARP_SCALE;
+		
+		String[] chromatic = new String[chromaticScale.length];
 		int pos=0;
-		for(int i=0; i<Constants.CHROMATIC_SCALE.length; i++){
+		for(int i=0; i<chromaticScale.length; i++){
 			if(sharps){
-				if(Constants.CHROMATIC_SCALE[i].equals(this.pitch)){
+				if(chromaticScale[i].equals(this.pitch)){
 					pos=i;
-					System.arraycopy(Constants.CHROMATIC_SCALE, pos, chromatic, 0, Constants.CHROMATIC_SCALE.length-pos);
-					System.arraycopy(Constants.CHROMATIC_SCALE, 0, chromatic, Constants.CHROMATIC_SCALE.length-pos, pos);
+					System.arraycopy(chromaticScale, pos, chromatic, 0, chromaticScale.length-pos);
+					System.arraycopy(chromaticScale, 0, chromatic, chromaticScale.length-pos, pos);
 					break;
 				}				
 			}else{
