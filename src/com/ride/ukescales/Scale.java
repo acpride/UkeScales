@@ -11,8 +11,8 @@ import org.apache.commons.lang3.ArrayUtils;
 public class Scale {
 
 	private static Map<String, Integer> semitonesFromIntervals = null;
-	private static final String circleOfFifths[] = { "C", "G", "D", "A", "E", "B",
-			"F#", "Db", "Ab", "Eb", "Bb", "F" };
+	private static final String circleOfFifths[] = { "C", "G", "D", "A", "E",
+			"B", "F#", "Db", "Ab", "Eb", "Bb", "F" };
 
 	public static enum ScaleType {
 		MAJOR_SCALE, MINOR_SCALE, MELODIC_SCALE, HARMONIC_SCALE, PENTATONIC_MAJOR_SCALE, PENTATONIC_MINOR_SCALE, BLUES_SCALE
@@ -149,11 +149,30 @@ public class Scale {
 		return endNote;
 	}
 
-	private String[] setIntervals(String key, String[] scaleIntervals) {
+	private String[] setIntervals(String key, String[] scaleIntervals,
+			ScaleType scaleType) {
 
 		boolean scaleWithSharps = true;
-		if (Arrays.asList(SCALES_WITH_FLATS).contains(key)) {
-			scaleWithSharps = false;
+		if (scaleType.equals(ScaleType.MAJOR_SCALE)) {
+			if (Arrays.asList(SCALES_WITH_FLATS).contains(key)) {
+				scaleWithSharps = false;
+			}
+		} else {
+			// for minors, get it's relative major, unless the root is sharp or
+			// flat
+			if (this.key.length() == 2 && this.key.endsWith("b")) {
+				scaleWithSharps = false;
+			} else {
+				String relativeMajor = this.relativeMajor();
+				if (Arrays.asList(SCALES_WITH_FLATS).contains(relativeMajor)) {
+					scaleWithSharps = false;
+				}
+			}
+			/*
+			 * else
+			 * if(Arrays.asList(SCALES_WITH_FLATS).contains(Pitch.getPitchByName
+			 * (relativeMajor).getEnharmony())){ scaleWithSharps = false; }
+			 */
 		}
 
 		String[] scale = new String[scaleIntervals.length + 1];
@@ -175,7 +194,7 @@ public class Scale {
 
 		// adjust intervals
 		String[] scalePattern = getScalePattern(scaleType);
-		String[] scale = setIntervals(key, scalePattern);
+		String[] scale = setIntervals(key, scalePattern, scaleType);
 
 		for (int i = 0; i < scale.length; i++) {
 			this.notes
@@ -183,15 +202,16 @@ public class Scale {
 
 		}
 		return this.notes;
-		
+
 	}
+
 	public void parse(ScaleType scaleType) throws Exception {
 
 		this.notes = new ArrayList<Note>();
 
 		// adjust intervals
 		String[] scalePattern = getScalePattern(scaleType);
-		String[] scale = setIntervals(key, scalePattern);
+		String[] scale = setIntervals(key, scalePattern, scaleType);
 
 		for (int i = 0; i < scale.length; i++) {
 			this.notes
@@ -201,39 +221,33 @@ public class Scale {
 		System.out.println(this.notes);
 
 	}
-	
-	public void relativeMinor() throws Exception {
-		this.notes = new ArrayList<Note>();
+
+	public String relativeMinor() {
 
 		Pitch p = Pitch.getPitchByName(this.key);
-		String relativeMinorKey = p.getNoteAtInterval(9, true);//TODO sharps!!!
-		// adjust intervals
-		String[] scalePattern = getScalePattern(ScaleType.MINOR_SCALE);
-		String[] scale = setIntervals(relativeMinorKey, scalePattern);
+		String relativeMinorKey = p.getNoteAtInterval(9, true);
 
-		for (int i = 0; i < scale.length; i++) {
-			this.notes
-					.add(new Note(scale[i], "degree", (i == 0) ? true : false));
-
+		if (this.key.length() == 2 && this.key.endsWith("b")
+				&& relativeMinorKey.endsWith("#")) {
+			relativeMinorKey = Pitch.getPitchByName(relativeMinorKey)
+					.getEnharmony();
 		}
-		System.out.println(this.notes);
+
+		return relativeMinorKey;
 	}
-	
-	public void relativeMajor() throws Exception {
-		this.notes = new ArrayList<Note>();
+
+	public String relativeMajor() {
 
 		Pitch p = Pitch.getPitchByName(this.key);
-		String relativeMinorKey = p.getNoteAtInterval(3, true);//TODO sharps!!!
-		// adjust intervals
-		String[] scalePattern = getScalePattern(ScaleType.MAJOR_SCALE);
-		String[] scale = setIntervals(relativeMinorKey, scalePattern);
+		String relativeMajorKey = p.getNoteAtInterval(3, true);
 
-		for (int i = 0; i < scale.length; i++) {
-			this.notes
-					.add(new Note(scale[i], "degree", (i == 0) ? true : false));
-
+		if (this.key.length() == 2 && this.key.endsWith("b")
+				&& relativeMajorKey.endsWith("#")) {
+			relativeMajorKey = Pitch.getPitchByName(relativeMajorKey)
+					.getEnharmony();
 		}
-		System.out.println(this.notes);
+
+		return relativeMajorKey;
 	}
 
 	public static String[] getCircleoffifths() {
