@@ -83,12 +83,13 @@ public class ScaleRenderer {
 			ScaleType scaleType) {
 
 		boolean scaleWithSharps = true;
-		if (scaleType.equals(ScaleType.MAJOR_SCALE)) {
+		if (scaleType.equals(ScaleType.MAJOR_SCALE)
+				|| scaleType.equals(ScaleType.PENTATONIC_MAJOR_SCALE)) {
 			if (Arrays.asList(Scale.SCALES_WITH_FLATS).contains(
 					scale.get(0).getPitch())) {
 				scaleWithSharps = false;
 			}
-		} else {
+		} else if (scaleType.equals(ScaleType.MINOR_SCALE)) {
 			// for minors, get it's relative major, unless the root is sharp or
 			// flat
 			if (scale.get(0).getPitch().length() == 2
@@ -106,13 +107,29 @@ public class ScaleRenderer {
 			 * getPitchByName(relativeMajor).getEnharmony())){ scaleWithSharps =
 			 * false; }
 			 */
+		} else if (scaleType.equals(ScaleType.PENTATONIC_MINOR_SCALE)
+				|| scaleType.equals(ScaleType.BLUES_SCALE)) {
+			// for pentatonic minors or blues scale, get it's relative
+			// pentatonic major, unless the root is sharp or flat
+			if (scale.get(0).getPitch().length() == 2
+					&& scale.get(0).getPitch().endsWith("b")) {
+				scaleWithSharps = false;
+			} else {
+				String relativeMajor = scale.get(1).getPitch();
+				if (Arrays.asList(Scale.SCALES_WITH_FLATS).contains(
+						relativeMajor)) {
+					scaleWithSharps = false;
+				}
+			}
+
 		}
 
 		if ("F#".equals(scale.get(0).getPitch())
 				&& scaleType.equals(ScaleType.MAJOR_SCALE)
 				|| "D#".equals(scale.get(0).getPitch())
 				&& scaleType.equals(ScaleType.MINOR_SCALE)) {
-			// for F# major and D# minor we populate the fretboard with E# instead of F
+			// for F# major and D# minor we populate the fretboard with E#
+			// instead of F
 			populateFretboard(scaleWithSharps, true);
 		} else {
 			populateFretboard(scaleWithSharps, false);
