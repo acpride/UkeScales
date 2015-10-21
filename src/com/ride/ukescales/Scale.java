@@ -28,9 +28,19 @@ public class Scale {
 	// TODO not implemented
 	private static final String MELODIC_SCALE[] = {};
 	private static final String HARMONIC_SCALE[] = {};
-	private static final String PENTATONIC_MAJOR_SCALE[] = {};
-	private static final String PENTATONIC_MINOR_SCALE[] = {};
-	private static final String BLUES_SCALE[] = {};
+	private static final String PENTATONIC_MAJOR_SCALE[] = { "w", "w", "h",
+			"w", "w", "w" };
+	// notes to omit based on a major scale
+	private static final Integer PENTATONIC_MAJOR_SCALE_OMIT_NOTES[] = { 3, 6 };
+
+	private static final String PENTATONIC_MINOR_SCALE[] = { "w", "h", "w",
+			"w", "h", "w" };
+	// notes to omit based on a natural minor scale
+	private static final Integer PENTATONIC_MINOR_SCALE_OMIT_NOTES[] = { 1, 5 };
+
+	private static final String BLUES_SCALE[] = { "w", "h", "w", "w", "h", "w" };
+	// notes to omit based on a natural minor scale
+	private static final Integer BLUES_SCALE_OMIT_NOTES[] = { 1, 5 };;
 
 	private static final String WHOLE_TONE = "w";
 	private static final String HALF_TONE = "h";
@@ -153,11 +163,12 @@ public class Scale {
 			ScaleType scaleType) {
 
 		boolean scaleWithSharps = true;
-		if (scaleType.equals(ScaleType.MAJOR_SCALE)) {
+		if (scaleType.equals(ScaleType.MAJOR_SCALE)
+				|| scaleType.equals(ScaleType.PENTATONIC_MAJOR_SCALE)) {
 			if (Arrays.asList(SCALES_WITH_FLATS).contains(key)) {
 				scaleWithSharps = false;
 			}
-		} else {
+		} else if (scaleType.equals(ScaleType.MINOR_SCALE)) {
 			// for minors, get it's relative major, unless the root is sharp or
 			// flat
 			if (this.key.length() == 2 && this.key.endsWith("b")) {
@@ -173,6 +184,18 @@ public class Scale {
 			 * if(Arrays.asList(SCALES_WITH_FLATS).contains(Pitch.getPitchByName
 			 * (relativeMajor).getEnharmony())){ scaleWithSharps = false; }
 			 */
+		} else if (scaleType.equals(ScaleType.PENTATONIC_MINOR_SCALE)
+				|| scaleType.equals(ScaleType.BLUES_SCALE)) {
+			// for pentatonic minors or blues scale, get it's relative major
+			// scale, unless the root is sharp or flat
+			if (this.key.length() == 2 && this.key.endsWith("b")) {
+				scaleWithSharps = false;
+			} else {
+				String relativeMajor = this.relativeMajor();
+				if (Arrays.asList(SCALES_WITH_FLATS).contains(relativeMajor)) {
+					scaleWithSharps = false;
+				}
+			}
 		}
 
 		String[] scale = new String[scaleIntervals.length + 1];
@@ -184,6 +207,60 @@ public class Scale {
 			int interval = (WHOLE_TONE.equals(scaleIntervals[i]) ? 2 : 1);
 			String note = findNextInterval(scale[i], interval, scaleWithSharps);
 			scale[i + 1] = note;
+		}
+
+		if (scaleType.equals(ScaleType.PENTATONIC_MAJOR_SCALE)) {
+			String[] scaleAux = scale;
+			scale = new String[5];
+			int index = 0;
+			for (int i = 0; i < scaleAux.length; i++) {
+				if (Arrays.asList(PENTATONIC_MAJOR_SCALE_OMIT_NOTES)
+						.contains(i)) {
+					continue;
+				}
+				scale[index] = scaleAux[i];
+				index++;
+			}
+
+		} else if (scaleType.equals(ScaleType.PENTATONIC_MINOR_SCALE)) {
+			String[] scaleAux = scale;
+			scale = new String[5];
+			int index = 0;
+			for (int i = 0; i < scaleAux.length; i++) {
+				if (Arrays.asList(PENTATONIC_MINOR_SCALE_OMIT_NOTES)
+						.contains(i)) {
+					continue;
+				}
+				scale[index] = scaleAux[i];
+				index++;
+			}
+
+		} else if (scaleType.equals(ScaleType.BLUES_SCALE)) {
+			// blues scale equals to pentatonic minor adding a flat fifth
+			// (tritone/6 semitones), so has 6 notes
+
+			String[] scaleAux = scale;
+			scale = new String[6];
+			int index = 0;
+			for (int i = 0; i < scaleAux.length; i++) {
+				if (Arrays.asList(BLUES_SCALE_OMIT_NOTES).contains(i)) {
+					continue;
+				}
+				scale[index] = scaleAux[i];
+				if (index == 2) {
+					// add blue note
+					Pitch p = Pitch.getPitchByName(key);
+					String flatFifth = p.getNoteAtInterval(6, scaleWithSharps);
+					if(flatFifth.substring(0,1).equals(scale[index].substring(0, 1))){
+						Pitch p2 = Pitch.getPitchByName(flatFifth);
+						flatFifth = p2.getEnharmony();
+					}
+					index++;
+					scale[index] = flatFifth;
+				}
+				index++;
+			}
+
 		}
 
 		return scale;
