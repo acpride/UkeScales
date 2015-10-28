@@ -35,5 +35,6 @@ public interface Constants {
 	public static final String[] CHROMATIC_SCALE = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 	public static final String[] CHROMATIC_SCALE_F_SHARP_SCALE = { "C", "C#", "D", "D#", "E", "E#", "F#", "G", "G#", "A", "A#", "B" };
 	public static final String[] CHROMATIC_SCALE_FLAT = { "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B" };
+	public static final int MAX_FRET_SCALE = 16;
 	
 }
