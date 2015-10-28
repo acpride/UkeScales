@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 public class Scale {
 
 	private static Map<String, Integer> semitonesFromIntervals = null;
@@ -159,9 +157,7 @@ public class Scale {
 		return endNote;
 	}
 
-	private String[] setIntervals(String key, String[] scaleIntervals,
-			ScaleType scaleType) {
-
+	private boolean isScaleWithSharps(String key, ScaleType scaleType){
 		boolean scaleWithSharps = true;
 		if (scaleType.equals(ScaleType.MAJOR_SCALE)
 				|| scaleType.equals(ScaleType.PENTATONIC_MAJOR_SCALE)) {
@@ -197,6 +193,13 @@ public class Scale {
 				}
 			}
 		}
+		return scaleWithSharps;
+	}
+	
+	private String[] setIntervals(String key, String[] scaleIntervals,
+			ScaleType scaleType) {
+
+		boolean scaleWithSharps = isScaleWithSharps(key, scaleType);
 
 		String[] scale = new String[scaleIntervals.length + 1];
 
@@ -248,10 +251,19 @@ public class Scale {
 				}
 				scale[index] = scaleAux[i];
 				if (index == 2) {
-					// add blue note
+					// add blue note, check first if the scale has flats or sharps
+					boolean sharps = checkSharpsScale(scaleAux);
 					Pitch p = Pitch.getPitchByName(key);
 					String flatFifth = p.getNoteAtInterval(6, scaleWithSharps);
-					if(flatFifth.substring(0,1).equals(scale[index].substring(0, 1))){
+					
+					if(flatFifth.length()==2 && flatFifth.substring(1,2).equals("b") && sharps){
+						Pitch p2 = Pitch.getPitchByName(flatFifth);
+						flatFifth = p2.getEnharmony();
+					}else if(flatFifth.length()==2 && flatFifth.substring(1,2).equals("#") && !sharps){
+						Pitch p2 = Pitch.getPitchByName(flatFifth);
+						flatFifth = p2.getEnharmony();
+					}else if(key.equals("B") || key.equals("F#")){
+						//special case
 						Pitch p2 = Pitch.getPitchByName(flatFifth);
 						flatFifth = p2.getEnharmony();
 					}
@@ -266,18 +278,27 @@ public class Scale {
 		return scale;
 	}
 
+	private boolean checkSharpsScale(String[] scale){		
+		for(String note : scale){
+			if(note.length()==2 && note.subSequence(1, 2).equals("b")){
+				return false;
+			}
+		}
+		return true;
+	}
 	public List<Note> getScale(ScaleType scaleType) throws Exception {
 		this.notes = new ArrayList<Note>();
 
 		// adjust intervals
 		String[] scalePattern = getScalePattern(scaleType);
 		String[] scale = setIntervals(key, scalePattern, scaleType);
-
+				
 		for (int i = 0; i < scale.length; i++) {
 			this.notes
 					.add(new Note(scale[i], "degree", (i == 0) ? true : false));
 
 		}
+		
 		return this.notes;
 
 	}
