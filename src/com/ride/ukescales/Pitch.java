@@ -105,40 +105,68 @@ public enum Pitch {
 	}
 
 	public String[] getChromaticScale(boolean sharps, boolean isFsharpMajor) {
-		
-		String[] chromaticScale = (!isFsharpMajor)?Constants.CHROMATIC_SCALE:Constants.CHROMATIC_SCALE_F_SHARP_SCALE;
-		
-		String[] chromatic = new String[chromaticScale.length];
-		int pos=0;
-		for(int i=0; i<chromaticScale.length; i++){
-			if(sharps){
-				if(chromaticScale[i].equals(this.pitch)){
-					pos=i;
-					System.arraycopy(chromaticScale, pos, chromatic, 0, chromaticScale.length-pos);
-					System.arraycopy(chromaticScale, 0, chromatic, chromaticScale.length-pos, pos);
-					break;
-				}				
-			}else{
-				if(Constants.CHROMATIC_SCALE_FLAT[i].equals(this.pitch)){
-					pos=i;
-					System.arraycopy(Constants.CHROMATIC_SCALE_FLAT, pos, chromatic, 0, Constants.CHROMATIC_SCALE.length-pos);
-					System.arraycopy(Constants.CHROMATIC_SCALE_FLAT, 0, chromatic, Constants.CHROMATIC_SCALE.length-pos, pos);
+
+		String[] chromaticScale = (!isFsharpMajor) ? Constants.CHROMATIC_SCALE
+				: Constants.CHROMATIC_SCALE_F_SHARP_SCALE;
+
+		// String[] chromatic = new String[chromaticScale.length];
+		String[] chromatic = new String[Constants.MAX_FRET_SCALE];
+		int x = 0;
+		// for(int i=0; i<chromaticScale.length; i++){
+		for (int i = 0; i < 15; i++) {
+			if (sharps) {
+				// if(chromaticScale[i].equals(this.pitch)){
+				if (chromaticScale[i % chromaticScale.length]
+						.equals(this.pitch)) {
+					// x=i;
+					x = i % Constants.MAX_FRET_SCALE;
+					System.arraycopy(chromaticScale, x, chromatic, 0,
+							chromaticScale.length - x);
+					System.arraycopy(chromaticScale, 0, chromatic,
+							chromaticScale.length - x, x);
+					// frets 12-15, repeating notes
+					System.arraycopy(chromatic, 0,
+							chromatic, Constants.CHROMATIC_SCALE.length
+									% Constants.MAX_FRET_SCALE,
+							Constants.MAX_FRET_SCALE
+									% Constants.CHROMATIC_SCALE.length);
 					break;
 				}
-			}		
+			} else {
+				// if(Constants.CHROMATIC_SCALE_FLAT[i].equals(this.pitch)){
+				if (Constants.CHROMATIC_SCALE_FLAT[i % chromaticScale.length]
+						.equals(this.pitch)) {
+					// x=i;
+					// x=i%chromaticScale.length;
+					x = i % Constants.MAX_FRET_SCALE;
+					System.arraycopy(Constants.CHROMATIC_SCALE_FLAT, x,
+							chromatic, 0, Constants.CHROMATIC_SCALE.length
+									- x);
+					System.arraycopy(Constants.CHROMATIC_SCALE_FLAT, 0,
+							chromatic, Constants.CHROMATIC_SCALE.length - x,
+							x);
+					// frets 12-15, repeating notes
+					System.arraycopy(chromatic, 0,
+							chromatic, Constants.CHROMATIC_SCALE.length
+									% Constants.MAX_FRET_SCALE,
+							Constants.MAX_FRET_SCALE
+									% Constants.CHROMATIC_SCALE.length);
+					break;
+				}
+			}
 		}
-				
+
 		return chromatic;
-		
+
 	}
-	
+
 	public String getNextSemitone(Pitch iniPitch, boolean sharps) {
-		
+
 		// get the pitch at a given interval
 		if (iniPitch.noteNumber + 1 > 13) {
 			for (Pitch p : Pitch.values()) {
 				if (p.noteNumber == (iniPitch.noteNumber + 1) - 12) {
-					String pitch = p.getPitch();					
+					String pitch = p.getPitch();
 					// check if it's a scale with flats or sharps
 					if (pitch.length() == 2
 							&& pitch.substring(1, 2).equals("#") && !sharps) {
@@ -159,7 +187,7 @@ public enum Pitch {
 				if (p.noteNumber == iniPitch.noteNumber + 1) {
 
 					String pitch = p.getPitch();
-					
+
 					// check if it's a scale with flats or sharps
 					if (pitch.length() == 2
 							&& pitch.substring(1, 2).equals("#") && !sharps) {
