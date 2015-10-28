@@ -1,5 +1,6 @@
 package com.ride.ukescales.test;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,25 +26,25 @@ public class UkeScalesTester {
 
 	private static final String BASE_PATH_MAJOR = "c://temp//major//";
 	private static final String BASE_PATH_MINOR = "c://temp//minor//";
+	private static final String BASE_PATH_PENTA_MAJOR = "c://temp//penta_major//";
+	private static final String BASE_PATH_PENTA_MINOR = "c://temp//penta_minor//";
+	private static final String BASE_PATH_BLUES = "c://temp//blues//";
 	/**
 	 * @param args
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {		
 		
-		/*
-		Scale scale2 = new Scale("C");
-		List<Note> myScale = scale2.getScale(ScaleType.MAJOR_SCALE);
+/*		
+		Scale scale2 = new Scale("F#");
+		List<Note> myScale2 = scale2.getScale(ScaleType.BLUES_SCALE);
 		
-		ScaleRenderer sr = new ScaleRenderer();
-		Fretboard fb = new Fretboard();
-		Document svg = sr.fretboardSVGRender(fb);
-		svg = sr.renderScale(svg, fb, myScale, ScaleType.MAJOR_SCALE);
-		renderToPNG(svg, "c://temp//testC.png");
-		*/
-		
-
-		
+		ScaleRenderer sr2 = new ScaleRenderer();
+		Fretboard fb2 = new Fretboard();
+		Document svg2 = sr2.fretboardSVGRender(fb2);
+		svg2 = sr2.renderScale(svg2, fb2, myScale2, ScaleType.BLUES_SCALE);
+		renderToPNG(svg2, "c://temp//testBluesFsharp.png");
+*/		
 		//Scale scale = new Scale("Gb");//ERROR!!! tambien en la relativa  Eb menor
 		//Scale scale = new Scale("Cb");//MAJOR ERROR!!!
 		//Scale scale = new Scale("Eb");
@@ -52,8 +53,7 @@ public class UkeScalesTester {
 		//scale.parse(ScaleType.MAJOR_SCALE);
 		//scale.relativeMinor();
 		//scale.relativeMajor();
-		
-		
+
 		System.out.println("---MAJOR SCALES---");
 		for(String pitch : Scale.getCircleoffifths()){
 			Scale scale = new Scale(pitch);
@@ -64,6 +64,10 @@ public class UkeScalesTester {
 			Document svg = sr.fretboardSVGRender(fb);
 			svg = sr.renderScale(svg, fb, myScale, ScaleType.MAJOR_SCALE);
 			
+			File dir = new File(BASE_PATH_MAJOR);
+			if(dir.exists()==false){
+				dir.mkdir();
+			}
 			String outputSVG = BASE_PATH_MAJOR + getOutputFileName(scale.getKey(),"svg");
 			renderToSVG(svg, outputSVG);
 			String outputJPG = BASE_PATH_MAJOR + getOutputFileName(scale.getKey(),"jpg");
@@ -83,11 +87,87 @@ public class UkeScalesTester {
 			Document svg = sr.fretboardSVGRender(fb);
 			svg = sr.renderScale(svg, fb, myScale, ScaleType.MINOR_SCALE);
 			
+			File dir = new File(BASE_PATH_MINOR);
+			if(dir.exists()==false){
+				dir.mkdir();
+			}
 			String outputSVG = BASE_PATH_MINOR + getOutputFileName(scale.getKey(),"svg");
 			renderToSVG(svg, outputSVG);
 			String outputJPG = BASE_PATH_MINOR + getOutputFileName(scale.getKey(),"jpg");
 			renderToJPG(svg, outputJPG);
 			String outputPNG = BASE_PATH_MINOR + getOutputFileName(scale.getKey(),"png");
+			renderToPNG(svg, outputPNG);	
+
+		}
+		
+		System.out.println("---PENTATONIC MAJOR SCALES---");
+		for(String pitch : Scale.getCircleoffifths()){
+			Scale scale = new Scale(pitch);
+			//String relativePitch = scale.relativeMinor();
+			//scale = new Scale(relativePitch);
+			List<Note> myScale = scale.getScale(ScaleType.PENTATONIC_MAJOR_SCALE);
+			ScaleRenderer sr = new ScaleRenderer();
+			Fretboard fb = new Fretboard();
+			Document svg = sr.fretboardSVGRender(fb);
+			svg = sr.renderScale(svg, fb, myScale, ScaleType.PENTATONIC_MAJOR_SCALE);
+			
+			File dir = new File(BASE_PATH_PENTA_MAJOR);
+			if(dir.exists()==false){
+				dir.mkdir();
+			}
+			String outputSVG = BASE_PATH_PENTA_MAJOR + getOutputFileName(scale.getKey(),"svg");
+			renderToSVG(svg, outputSVG);
+			String outputJPG = BASE_PATH_PENTA_MAJOR + getOutputFileName(scale.getKey(),"jpg");
+			renderToJPG(svg, outputJPG);
+			String outputPNG = BASE_PATH_PENTA_MAJOR + getOutputFileName(scale.getKey(),"png");
+			renderToPNG(svg, outputPNG);	
+
+		}
+		
+		System.out.println("---PENTATONIC MINOR SCALES---");
+		for(String pitch : Scale.getCircleoffifths()){
+			Scale scale = new Scale(pitch);
+			String relativePitch = scale.relativeMinor();
+			scale = new Scale(relativePitch);
+			List<Note> myScale = scale.getScale(ScaleType.PENTATONIC_MINOR_SCALE);
+			ScaleRenderer sr = new ScaleRenderer();
+			Fretboard fb = new Fretboard();
+			Document svg = sr.fretboardSVGRender(fb);
+			svg = sr.renderScale(svg, fb, myScale, ScaleType.PENTATONIC_MINOR_SCALE);
+			
+			File dir = new File(BASE_PATH_PENTA_MINOR);
+			if(dir.exists()==false){
+				dir.mkdir();
+			}
+			String outputSVG = BASE_PATH_PENTA_MINOR + getOutputFileName(scale.getKey(),"svg");
+			renderToSVG(svg, outputSVG);
+			String outputJPG = BASE_PATH_PENTA_MINOR + getOutputFileName(scale.getKey(),"jpg");
+			renderToJPG(svg, outputJPG);
+			String outputPNG = BASE_PATH_PENTA_MINOR + getOutputFileName(scale.getKey(),"png");
+			renderToPNG(svg, outputPNG);	
+
+		}
+		
+		System.out.println("---BLUES SCALES---");
+		for(String pitch : Scale.getCircleoffifths()){
+			Scale scale = new Scale(pitch);
+			String relativePitch = scale.relativeMinor();
+			scale = new Scale(relativePitch);
+			List<Note> myScale = scale.getScale(ScaleType.BLUES_SCALE);
+			ScaleRenderer sr = new ScaleRenderer();
+			Fretboard fb = new Fretboard();
+			Document svg = sr.fretboardSVGRender(fb);
+			svg = sr.renderScale(svg, fb, myScale, ScaleType.BLUES_SCALE);
+			
+			File dir = new File(BASE_PATH_BLUES);
+			if(dir.exists()==false){
+				dir.mkdir();
+			}
+			String outputSVG = BASE_PATH_BLUES + getOutputFileName(scale.getKey(),"svg");
+			renderToSVG(svg, outputSVG);
+			String outputJPG = BASE_PATH_BLUES + getOutputFileName(scale.getKey(),"jpg");
+			renderToJPG(svg, outputJPG);
+			String outputPNG = BASE_PATH_BLUES + getOutputFileName(scale.getKey(),"png");
 			renderToPNG(svg, outputPNG);	
 
 		}
