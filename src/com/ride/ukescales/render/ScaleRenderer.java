@@ -20,30 +20,33 @@ public class ScaleRenderer {
 
 	private String[][] fretboardNotes;
 
-	private void populateFretboard(boolean sharps, boolean isFsharpMajor) {
+	private void populateFretboard(boolean sharps, String key, ScaleType scaleType) {
 		// set notes in every fret of every string
 		// 4th string
 		String open4 = Constants.STANDARD_TUNING[0];
 		Pitch p4 = Pitch.getPitchByName(open4);
-		String[] notes4 = p4.getChromaticScale(sharps, isFsharpMajor);
+		String[] notes4 = p4.getChromaticScale(sharps, open4, key, scaleType);
 		System.out.println("4th string: " + Arrays.asList(notes4));
 
 		// 3rd string
-		String open3 = Constants.STANDARD_TUNING[1];
+		String open3 = Constants.STANDARD_TUNING[1];		
 		Pitch p3 = Pitch.getPitchByName(open3);
-		String[] notes3 = p3.getChromaticScale(sharps, isFsharpMajor);
+		if("F#".equals(key) && scaleType.equals(ScaleType.LYDIAN_MODE)){
+			p3 = Pitch.getPitchByName(p3.getEnharmony());
+		}
+		String[] notes3 = p3.getChromaticScale(sharps, open3, key, scaleType);
 		System.out.println("3rd string: " + Arrays.asList(notes3));
 
 		// 2nd string
 		String open2 = Constants.STANDARD_TUNING[2];
 		Pitch p2 = Pitch.getPitchByName(open2);
-		String[] notes2 = p2.getChromaticScale(sharps, isFsharpMajor);
+		String[] notes2 = p2.getChromaticScale(sharps, open2, key, scaleType);
 		System.out.println("2nd string: " + Arrays.asList(notes2));
 
 		// 1st string
 		String open1 = Constants.STANDARD_TUNING[3];
 		Pitch p1 = Pitch.getPitchByName(open1);
-		String[] notes1 = p1.getChromaticScale(sharps, isFsharpMajor);
+		String[] notes1 = p1.getChromaticScale(sharps, open1, key, scaleType);
 		System.out.println("1st string: " + Arrays.asList(notes1));
 
 		fretboardNotes = new String[4][notes1.length];
@@ -52,6 +55,49 @@ public class ScaleRenderer {
 		fretboardNotes[2] = notes3;
 		fretboardNotes[3] = notes4;
 	}
+	
+	/*
+	private void populateFretboard(boolean sharps, boolean isFsharpMajor) {
+		populateFretboard(sharps, isFsharpMajor, false);
+	}
+	
+	private void populateFretboard(boolean sharps, boolean isFsharpMajor, boolean isDflatPhrygian) {
+		populateFretboard(sharps, isFsharpMajor, isDflatPhrygian, false);
+	}
+	
+	private void populateFretboard(boolean sharps, boolean isFsharpMajor, boolean isDflatPhrygian, boolean isDflatLocrian) {
+		// set notes in every fret of every string
+		// 4th string
+		String open4 = Constants.STANDARD_TUNING[0];
+		Pitch p4 = Pitch.getPitchByName(open4);
+		String[] notes4 = p4.getChromaticScale(sharps, isFsharpMajor, isDflatPhrygian, isDflatLocrian);
+		System.out.println("4th string: " + Arrays.asList(notes4));
+
+		// 3rd string
+		String open3 = Constants.STANDARD_TUNING[1];
+		Pitch p3 = Pitch.getPitchByName(open3);
+		String[] notes3 = p3.getChromaticScale(sharps, isFsharpMajor, isDflatPhrygian, isDflatLocrian);
+		System.out.println("3rd string: " + Arrays.asList(notes3));
+
+		// 2nd string
+		String open2 = Constants.STANDARD_TUNING[2];
+		Pitch p2 = Pitch.getPitchByName(open2);
+		String[] notes2 = p2.getChromaticScale(sharps, isFsharpMajor, isDflatPhrygian, isDflatLocrian);
+		System.out.println("2nd string: " + Arrays.asList(notes2));
+
+		// 1st string
+		String open1 = Constants.STANDARD_TUNING[3];
+		Pitch p1 = Pitch.getPitchByName(open1);
+		String[] notes1 = p1.getChromaticScale(sharps, isFsharpMajor, isDflatPhrygian, isDflatLocrian);
+		System.out.println("1st string: " + Arrays.asList(notes1));
+
+		fretboardNotes = new String[4][notes1.length];
+		fretboardNotes[0] = notes1;
+		fretboardNotes[1] = notes2;
+		fretboardNotes[2] = notes3;
+		fretboardNotes[3] = notes4;
+	}
+	*/
 
 	/**
 	 * Renders a SVG from a Fretboard object
@@ -122,8 +168,28 @@ public class ScaleRenderer {
 				}
 			}
 
+		}else if(Scale.isMajorMode(scaleType)){
+			//major mode scales, same rule as standard major scales
+			if (Arrays.asList(Scale.SCALES_WITH_FLATS).contains(scale.get(0).getPitch())) {
+				scaleWithSharps = false;
+			}
+		}else{
+			// for minors modes, get it's relative major, unless the root is sharp or flat
+			if (scale.get(0).getPitch().length() == 2 && scale.get(0).getPitch().endsWith("b")) {
+				scaleWithSharps = false;
+			} else {
+				//for minor modes, get it's relative major degree
+				//String relativeMajor = scale.get(2).getPitch();
+				String relativeMajor = Scale.getRelativeMajorFromModalScale(scale, scaleType);
+				if (Arrays.asList(Scale.SCALES_WITH_FLATS).contains(relativeMajor)) {
+					scaleWithSharps = false;
+				}
+			}
 		}
+		
+		populateFretboard(scaleWithSharps, scale.get(0).getPitch(), scaleType);
 
+		/*
 		if ("F#".equals(scale.get(0).getPitch())
 				&& scaleType.equals(ScaleType.MAJOR_SCALE)
 				|| "D#".equals(scale.get(0).getPitch())
@@ -132,8 +198,17 @@ public class ScaleRenderer {
 			// instead of F
 			populateFretboard(scaleWithSharps, true);
 		} else {
-			populateFretboard(scaleWithSharps, false);
+			if(isDflatDorian(scale, scaleType)){
+				populateFretboard(scaleWithSharps, false, true);
+			}else{
+				if("Db".equals(scale.get(0).getPitch()) && scaleType.equals(ScaleType.LOCRIAN_MODE)){
+					populateFretboard(scaleWithSharps, false, false, true);
+				}else{
+					populateFretboard(scaleWithSharps, false);
+				}
+			}
 		}
+		*/
 
 		String svgNS = SVGDOMImplementation.SVG_NAMESPACE_URI;
 		List<Element> scaleNotes = new ArrayList<Element>();
@@ -520,4 +595,13 @@ public class ScaleRenderer {
 		this.fretboardNotes = fretboardNotes;
 	}
 
+	public boolean isDflatDorian(List<Note> scale, ScaleType scaleType){
+		if("Db".equals(scale.get(0).getPitch()) && scaleType.equals(ScaleType.PHRYGIAN_MODE)){
+			return true;
+		}else if("Ab".equals(scale.get(0).getPitch()) && scaleType.equals(ScaleType.DORIAN_MODE)){
+			return true;
+		}else{
+			return false;
+		}
+	}
 }

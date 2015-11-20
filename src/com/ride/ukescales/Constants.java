@@ -34,7 +34,11 @@ public interface Constants {
 	public static final String[] STANDARD_TUNING = { "G", "C", "E", "A" };
 	public static final String[] CHROMATIC_SCALE = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 	public static final String[] CHROMATIC_SCALE_F_SHARP_SCALE = { "C", "C#", "D", "D#", "E", "E#", "F#", "G", "G#", "A", "A#", "B" };
+	public static final String[] CHROMATIC_SCALE_F_SHARP_LYDIAN_SCALE = { "B#", "C#", "D", "D#", "E", "E#", "F#", "G", "G#", "A", "A#", "B" };
 	public static final String[] CHROMATIC_SCALE_FLAT = { "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B" };
+	public static final String[] CHROMATIC_SCALE_D_FLAT_PHRYGIAN_SCALE = { "C", "Db", "Ebb", "Eb", "Fb", "F", "Gb", "G", "Ab", "Bbb", "Bb", "Cb" };
+	public static final String[] CHROMATIC_SCALE_D_FLAT_LOCRIAN_SCALE = { "C", "Db", "Ebb", "Eb", "Fb", "F", "Gb", "Abb", "Ab", "Bbb", "Bb", "Cb" };
+	
 	public static final int MAX_FRET_SCALE = 16;
 	
 }
