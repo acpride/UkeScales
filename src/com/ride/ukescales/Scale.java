@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.crypto.AEADBadTagException;
-
 public class Scale {
 
 	private static Map<String, Integer> semitonesFromIntervals = null;
@@ -46,16 +44,17 @@ public class Scale {
 	private static final String BLUES_SCALE[] = { "w", "h", "w", "w", "h", "w" };
 	// notes to omit based on a natural minor scale
 	private static final Integer BLUES_SCALE_OMIT_NOTES[] = { 1, 5 };;
-	
-	//modes
-	private static final String IONIAN_MODE[] = { "w", "w", "h", "w", "w", "w" };    
-	private static final String DORIAN_MODE[] = { "w", "h", "w", "w", "w", "h" };    
-	private static final String PHRYGIAN_MODE[] = { "h", "w", "w", "w", "h", "w" };  
-	private static final String LYDIAN_MODE[] = { "w", "w", "w", "h", "w", "w" };    
-	private static final String MIXOLYDIAN_MODE[] = { "w", "w", "h", "w", "w", "h" };
-	private static final String AEOLIAN_MODE[] = { "w", "h", "w", "w", "h", "w" };   
-	private static final String LOCRIAN_MODE[] = { "h", "w", "w", "h", "w", "w" };   
-	
+
+	// modes
+	private static final String IONIAN_MODE[] = { "w", "w", "h", "w", "w", "w" };
+	private static final String DORIAN_MODE[] = { "w", "h", "w", "w", "w", "h" };
+	private static final String PHRYGIAN_MODE[] = { "h", "w", "w", "w", "h",
+			"w" };
+	private static final String LYDIAN_MODE[] = { "w", "w", "w", "h", "w", "w" };
+	private static final String MIXOLYDIAN_MODE[] = { "w", "w", "h", "w", "w",
+			"h" };
+	private static final String AEOLIAN_MODE[] = { "w", "h", "w", "w", "h", "w" };
+	private static final String LOCRIAN_MODE[] = { "h", "w", "w", "h", "w", "w" };
 
 	private static final String WHOLE_TONE = "w";
 	private static final String HALF_TONE = "h";
@@ -132,11 +131,11 @@ public class Scale {
 				throw new Exception("ScaleType " + scaleType + " not known");
 			}
 		} else {
-			//modal scales
+			// modal scales
 			if (scaleType == ScaleType.IONIAN_MODE) {
 				return IONIAN_MODE;
 			} else if (scaleType == ScaleType.DORIAN_MODE) {
-				return DORIAN_MODE;			
+				return DORIAN_MODE;
 			} else if (scaleType == ScaleType.PHRYGIAN_MODE) {
 				return PHRYGIAN_MODE;
 			} else if (scaleType == ScaleType.LYDIAN_MODE) {
@@ -234,14 +233,15 @@ public class Scale {
 					scaleWithSharps = false;
 				}
 			}
-		
-		}else if(isMajorMode(scaleType)){
-			//major mode scales, same rule as standard major scales
+
+		} else if (isMajorMode(scaleType)) {
+			// major mode scales, same rule as standard major scales
 			if (Arrays.asList(SCALES_WITH_FLATS).contains(key)) {
 				scaleWithSharps = false;
 			}
-		}else{
-			// for minors modes, get it's relative major, unless the root is sharp or flat
+		} else {
+			// for minors modes, get it's relative major, unless the root is
+			// sharp or flat
 			if (this.key.length() == 2 && this.key.endsWith("b")) {
 				scaleWithSharps = false;
 			} else {
@@ -251,12 +251,12 @@ public class Scale {
 				}
 			}
 		}
-		
+
 		return scaleWithSharps;
 	}
 
-	private String[] setIntervalsNonModalScales(String key, String[] scaleIntervals,
-			ScaleType scaleType) {
+	private String[] setIntervalsNonModalScales(String key,
+			String[] scaleIntervals, ScaleType scaleType) {
 		boolean scaleWithSharps = isScaleWithSharps(key, scaleType);
 
 		String[] scale = new String[scaleIntervals.length + 1];
@@ -338,9 +338,9 @@ public class Scale {
 
 		return scale;
 	}
-	
-	private String[] setIntervalsModalScales(String key, String[] scaleIntervals,
-			ScaleType scaleType) {
+
+	private String[] setIntervalsModalScales(String key,
+			String[] scaleIntervals, ScaleType scaleType) {
 
 		boolean scaleWithSharps = isScaleWithSharps(key, scaleType);
 
@@ -423,16 +423,16 @@ public class Scale {
 
 		return scale;
 	}
-	
+
 	private String[] setIntervals(String key, String[] scaleIntervals,
 			ScaleType scaleType) {
 
-		if(isModalScale(scaleType)==false){
+		if (isModalScale(scaleType) == false) {
 			return setIntervalsNonModalScales(key, scaleIntervals, scaleType);
-		}else{
+		} else {
 			return setIntervalsModalScales(key, scaleIntervals, scaleType);
 		}
-		
+
 	}
 
 	private boolean checkSharpsScale(String[] scale) {
@@ -505,9 +505,10 @@ public class Scale {
 
 		return relativeMajorKey;
 	}
-	
-	public static String getRelativeMajorFromModalScale(List<Note>scale, ScaleType scaleType){
-		
+
+	public static String getRelativeMajorFromModalScale(List<Note> scale,
+			ScaleType scaleType) {
+
 		switch (scaleType) {
 		case DORIAN_MODE:
 			return scale.get(6).getPitch();
@@ -516,7 +517,7 @@ public class Scale {
 		case AEOLIAN_MODE:
 			return scale.get(2).getPitch();
 		case LOCRIAN_MODE:
-			return scale.get(1).getPitch();		
+			return scale.get(1).getPitch();
 		default:
 			return scale.get(0).getPitch();
 		}
